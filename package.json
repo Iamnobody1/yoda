@@ -24,7 +24,9 @@
     "lint": "eslint src/**/*.{js,jsx,ts,tsx,json}",
     "lint:fix": "eslint --fix 'src/**/*.{js,jsx,ts,tsx,json}'",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,css,md,json}' --config ./.prettierrc"
-  },
+
+    },
+
   "eslintConfig": {
     "extends": [
       "react-app",
@@ -48,10 +50,15 @@
     "@typescript-eslint/parser": "^5.27.0",
     "autoprefixer": "^10.4.7",
     "eslint": "^8.16.0",
+<<<<<<< HEAD
 
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
 
+=======
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+>>>>>>> d80b3e8937c5409e36d7fcf930339c29b1093a98
     "eslint-plugin-react": "^7.30.0",
     "postcss": "^8.4.14",
     "prettier": "^2.6.2",
