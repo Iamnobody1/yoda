@@ -2,10 +2,11 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 
 interface Post {
-  id: string;
-  userId: string;
-  title: string;
-  body: string;
+  id: number;
+  date: string;
+  temperatureC: number;
+  temperatureF: number;
+  summary: string;
 }
 
 function WeatherForecast() {
@@ -17,7 +18,7 @@ function WeatherForecast() {
 
   function getPosts() {
     axios
-      .get<Post[]>('https://jsonplaceholder.typicode.com/posts')
+      .get<Post[]>('https://localhost:5001/WeatherForecast')
       .then((response) => {
         setPosts(response.data);
       });
@@ -39,9 +40,12 @@ function WeatherForecast() {
               />
               <div className="px-6 py-4">
                 <div className="text-gray-600 font-bold text-xl mb-2">
-                  {post.title}
+                  {post.temperatureC}
                 </div>
-                <p className="text-gray-400 text-base">{post.body}</p>
+                <p className="text-gray-400 text-base">
+                  {post.temperatureF} F | {post.temperatureC} C
+                </p>
+                <p>{post.summary}</p>
               </div>
             </div>
           </div>
