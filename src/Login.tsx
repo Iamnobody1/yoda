@@ -8,7 +8,7 @@ function Login() {
 
   function login() {
     axios
-      .post<string>('http://localhost:5000/authentication', {
+      .post<string>('https://localhost:5001/authentication', {
         username: 'admin',
         password: '1234',
       })
