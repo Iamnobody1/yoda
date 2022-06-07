@@ -5,7 +5,8 @@ function App() {
   return (
     <>
       <h1>Fluke Keeper!</h1>
-      <Link to="/">Home</Link>&nbsp;&nbsp;&nbsp;
+      <Link to="/">Home</Link>&nbsp;
+      <Link to="/login">Login</Link>&nbsp;
       <Link to="/weather-forecast">WeatherForecast</Link>
     </>
   );
