@@ -1,4 +1,5 @@
 {
+
   "env": {
     "browser": true,
     "es2021": true,
@@ -20,16 +21,9 @@
     "sourceType": "module"
   },
   "plugins": ["react", "react-hooks", "@typescript-eslint", "prettier"],
-  "rules": {
-    "camelcase": "error",
-    "no-duplicate-imports": "error",
-    "quotes": ["error", "single"],
-    "spaced-comment": "error",
-    "react/react-in-jsx-scope": "off"
-  },
-  "settings": {
-    "import/resolver": {
-      "typescript": {}
-    }
-  }
+
+  "rules": {}
+
+
 }
+
