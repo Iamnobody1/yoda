@@ -4,7 +4,7 @@ function Index() {
   return (
     <>
       <div className='flex min-h-screen items-center justify-center bg-white drop-shadow-xl'>
-        <div className='-mt-10 flex flex-col items-center space-y-3 rounded-md border-[1px] border-slate-200 p-10 drop-shadow-xl'>
+        <div className='-mt-50 flex flex-col items-center space-y-6 rounded-md border-[1px] border-slate-200 p-10 drop-shadow-xl'>
           <div>
             <img
               className='mx-auto h-12 w-auto'
