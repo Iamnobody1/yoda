@@ -2,6 +2,7 @@ import React from 'react'
 import axios, { AxiosError } from 'axios'
 
 const Login = () => {
+  const displaynameRef = React.createRef<HTMLInputElement>()
   const usernameRef = React.createRef<HTMLInputElement>()
   const passwordRef = React.createRef<HTMLInputElement>()
 
@@ -11,8 +12,9 @@ const Login = () => {
     console.log(1)
     axios
       .post<string>('https://localhost:5001/authentication', {
-        username: usernameRef.current?.value,
-        password: passwordRef.current?.value,
+        displayname: 'samplename',
+        username: 'admin',
+        password: '1234',
       })
       .then((response) => {
         console.log(response)
@@ -39,10 +41,23 @@ const Login = () => {
                 alt='Workflow'
               />
               <h2 className='text-l mt-6 text-center text-slate-400'>
-                Please Sign in to your account
+                Enter your personal details to create account
               </h2>
             </div>
             <form className='mt-8 space-y-6' action='#' method='POST'>
+              <label className='block'>
+                <span className='block text-sm font-medium text-slate-700'>Display Name</span>
+                <input
+                  ref={displaynameRef}
+                  type='email'
+                  placeholder='Sample'
+                  className=' mt-1 block w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 placeholder-slate-400
+      shadow-sm invalid:border-red-500 invalid:text-pinred-600 focus:border-sky-500
+      focus:outline-none focus:ring-1 focus:ring-sky-500 focus:invalid:border-red-500
+      focus:invalid:ring-red-500 disabled:border-slate-200
+      disabled:bg-slate-50 disabled:text-slate-500 disabled:shadow-none'
+                />
+              </label>
               <label className='block'>
                 <span className='block text-sm font-medium text-slate-700'>Email</span>
                 <input
@@ -50,7 +65,7 @@ const Login = () => {
                   type='email'
                   placeholder='you@example.com'
                   className=' mt-1 block w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 placeholder-slate-400
-      shadow-sm invalid:border-red-500 invalid:text-red-600 focus:border-sky-500
+      shadow-sm invalid:border-pinred-500 invalid:text-pinred-600 focus:border-sky-500
       focus:outline-none focus:ring-1 focus:ring-sky-500 focus:invalid:border-red-500
       focus:invalid:ring-red-500 disabled:border-slate-200
       disabled:bg-slate-50 disabled:text-slate-500 disabled:shadow-none'
@@ -78,17 +93,15 @@ const Login = () => {
                     type='checkbox'
                     className='h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500'
                   />
-                  <label htmlFor='remember-me' className='ml-2 block text-sm text-gray-900'>
+                  <label
+                    htmlFor='remember-me'
+                    className='ml-2 block text-sm text-sm text-slate-400'
+                  >
                     {' '}
-                    Remember me{' '}
+                    I agree to <span className=' text-indigo-600'> privacy policy </span>
+                    {' & '}
+                    <span className=' text-indigo-600'> terms </span>
                   </label>
-                </div>
-
-                <div className='text-sm'>
-                  <a href='#' className='font-medium text-indigo-600 hover:text-indigo-500'>
-                    {' '}
-                    Forgot your password?{' '}
-                  </a>
                 </div>
               </div>
 
@@ -113,13 +126,13 @@ const Login = () => {
               <span className='text-sm'>
                 <a href='#' className='font-regular text-slate-400 hover:text-indigo-500'>
                   {' '}
-                  New on our platform?{' '}
+                  Already have an account?{' '}
                 </a>
               </span>{' '}
               <span className='text-sm'>
                 <a href='#' className='font-medium text-indigo-600 hover:text-indigo-500'>
                   {' '}
-                  Create an account{' '}
+                  Sign in instead{' '}
                 </a>
               </span>
             </div>
