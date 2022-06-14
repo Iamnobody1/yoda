@@ -1,5 +1,6 @@
 import React from 'react'
 import axios, { AxiosError } from 'axios'
+import Link from 'next/link'
 
 const Login = () => {
   const usernameRef = React.createRef<HTMLInputElement>()
@@ -105,7 +106,9 @@ const Login = () => {
                       clipRule='evenodd'
                     />
                   </span>
-                  Sign in
+                  <Link href='/'>
+                    <a>Sign in </a>
+                  </Link>
                 </button>
               </div>
             </form>
