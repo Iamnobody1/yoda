@@ -6,14 +6,16 @@ const Login = () => {
   const displaynameRef = React.createRef<HTMLInputElement>()
   const usernameRef = React.createRef<HTMLInputElement>()
   const passwordRef = React.createRef<HTMLInputElement>()
+  const avatarRef = React.createRef<HTMLInputElement>()
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     event.preventDefault()
     console.log(1)
     axios
-      .post<string>('https://localhost:5001/users', {
+      .post<string>('https://localhost:5001/Users', {
         displayname: displaynameRef.current?.value,
         username: usernameRef.current?.value,
         password: passwordRef.current?.value,
+        avatar: avatarRef.current?.value,
       })
       .then((response) => {
         console.log(response)
@@ -76,6 +78,19 @@ const Login = () => {
                   ref={passwordRef}
                   type="password"
                   placeholder="Enter your password"
+                  className=" mt-1 block w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 placeholder-slate-400
+      shadow-sm invalid:border-red-500 invalid:text-red-600 focus:border-sky-500
+      focus:outline-none focus:ring-1 focus:ring-sky-500 focus:invalid:border-red-500
+      focus:invalid:ring-red-500 disabled:border-slate-200
+      disabled:bg-slate-50 disabled:text-slate-500 disabled:shadow-none"
+                />
+              </label>
+              <label className="block">
+                <span className="block text-sm font-medium text-slate-700">Avatar</span>
+                <input
+                  ref={avatarRef}
+                  type="avater"
+                  placeholder="Enter your avatar"
                   className=" mt-1 block w-full rounded-full border border-slate-300 bg-white px-3 py-2 text-sm placeholder-slate-400 placeholder-slate-400
       shadow-sm invalid:border-red-500 invalid:text-red-600 focus:border-sky-500
       focus:outline-none focus:ring-1 focus:ring-sky-500 focus:invalid:border-red-500
