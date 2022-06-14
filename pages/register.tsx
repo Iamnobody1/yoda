@@ -126,7 +126,9 @@ const Login = () => {
                       clipRule="evenodd"
                     />
                   </span>
-                  Sign in
+                  <Link href="/login">
+                    <a className="text-white">Create Account</a>
+                  </Link>
                 </button>
               </div>
             </form>
