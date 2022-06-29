@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-
-//
 interface IPoring {
   id: number;
   sprite: string;
@@ -14,37 +12,62 @@ interface IPoring {
 function Poring() {
   const router = useRouter();
   const [porings, setPorings] = useState<IPoring[]>([]);
-  const [mounted, setMounted] = useState(false);
   const [clientHeight, setClientHeight] = useState(0);
   const [clientWidth, setClientWidth] = useState(0);
-  const [poringUnits, setPoringUnits] = useState(10);
-  const [width, setWidth] = useState(50);
-  const [height, setHeight] = useState(50);
+  const [height, setHeight] = useState(0);
+  const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    if (!mounted) {
-      setMounted(true);
-      console.log('00');
+    console.log('useEffect []');
+    if (router.asPath !== router.route) {
+      console.log(router.query.units);
       setClientHeight(document.getElementById('bun')?.offsetHeight || 0);
       setClientWidth(document.getElementById('bun')?.offsetWidth || 0);
-      console.log(poringUnits);
-      for (let index = 0; index < poringUnits; index++) {
-        console.log('01');
-        addUnits();
-        moveMent();
+      setHeight(50);
+      setWidth(50);
+      const items: IPoring[] = [];
+      for (let i = 0; i < parseInt(`${router.query.units}`); i++) {
+        const item = poringData();
+        items.push(item);
+        moveMent(item.id);
       }
+      setPorings(items);
     }
-    console.log(1);
-  }, []);
+  }, [router]);
+
+  const poringData = () => {
+    const item: IPoring = {
+      id: random(99999999, 1000000000),
+      sprite: '/poring.gif',
+      width: 50,
+      height: 50,
+      positionX: moveMentX(),
+      positionY: moveMentY(),
+    };
+    return item;
+  };
 
   const random = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min) + min);
   };
 
-  const checkRouter = () => {
-    if (router?.query != undefined) {
-      setPoringUnits(parseInt(`${router.query.units}`));
-    }
+  const moveMent = (id: number) => {
+    setPorings((current) =>
+      current.map((obj) => {
+        if (obj.id === id) {
+          return {
+            ...obj,
+            positionX: moveMentX(),
+            positionY: moveMentY(),
+          };
+        }
+        return obj;
+      }),
+    );
+    const nextExecutionTime = random(4000, 6000);
+    setTimeout(() => {
+      moveMent(id);
+    }, nextExecutionTime);
   };
 
   const moveMentX = () => {
@@ -53,7 +76,6 @@ function Poring() {
     let positionX = random(minWidth, maxWidth);
     if (positionX <= minWidth + width) positionX = maxWidth + width;
     if (positionX >= maxWidth - width) positionX = maxWidth - width;
-    console.log('X', minWidth, maxWidth, positionX);
     return positionX;
   };
 
@@ -63,72 +85,42 @@ function Poring() {
     let positionY = random(minHeight, maxHeight);
     if (positionY <= minHeight + height) positionY = maxHeight + height;
     if (positionY >= maxHeight - height) positionY = maxHeight - height;
-    console.log('Y', minHeight, maxHeight, positionY);
     return positionY;
   };
 
-  const addUnits = () => {
-    setPorings((items) => [
-      ...items,
-      {
-        id: items.length + 1,
-        sprite: '/poring.gif',
-        width: width,
-        height: height,
-        positionX: moveMentX(),
-        positionY: moveMentY(),
-      },
-    ]);
-  };
-
-  const moveMent = () => {
-    porings.map((poring) => {
-      poring.positionX = moveMentX();
-      poring.positionY = moveMentY();
-      return poring;
-    });
-    setPorings(porings);
-    setInterval(() => {
-      moveMent();
-    }, 2000);
-  };
-
   return (
-    <>
-      <div
-        id="bun"
-        className="overflow-hidden"
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          height: '100%',
-          width: '100%',
-          backgroundImage: `url('/genshin.jpg')`,
-          backgroundPosition: 'center',
-          backgroundSize: 'cover',
-        }}
-      >
-        {porings.map((poring, idx) => {
-          return (
-            <img
-              key={poring.id}
-              className="absolute"
-              src={poring.sprite}
-              alt=""
-              style={{
-                position: 'absolute',
-                width: poring.width,
-                height: poring.height,
-                top: poring.positionY,
-                left: poring.positionX,
-                transition: '6000ms',
-              }}
-            />
-          );
-        })}
-      </div>
-    </>
+    <div
+      id="bun"
+      className="overflow-hidden"
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        height: '100%',
+        width: '100%',
+        backgroundImage: `url('/genshin.jpg')`,
+        backgroundPosition: 'center',
+        backgroundSize: 'cover',
+      }}
+    >
+      {porings.map((poring) => {
+        return (
+          <img
+            key={poring.id}
+            className="absolute"
+            src={poring.sprite}
+            alt=""
+            style={{
+              position: 'absolute',
+              width: poring.width,
+              height: poring.height,
+              transform: `translate(${poring.positionX}px, ${poring.positionY}px)`,
+              transitionDuration: '6000ms',
+            }}
+          />
+        );
+      })}
+    </div>
   );
 }
 
