@@ -1,11 +1,15 @@
-import React from 'react'
+import { url } from 'inspector';
+import React, { useState } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import Poring from './poring';
+import { NextQueryParamProvider } from 'next-query-params';
 
 function Index() {
   return (
-    <h1 className='bg-gradient-to-r from-emerald-400 to-blue-500 bg-clip-text text-4xl font-extrabold text-transparent'>
-      React Typescript Tailwind Sample
-    </h1>
-  )
+    <NextQueryParamProvider>
+      <Poring />
+    </NextQueryParamProvider>
+  );
 }
 
-export default Index
+export default Index;
