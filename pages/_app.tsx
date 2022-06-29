@@ -5,9 +5,11 @@ import { NextQueryParamProvider } from 'next-query-params';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <NextQueryParamProvider>
-      <Component {...pageProps} />
-    </NextQueryParamProvider>
+    <React.StrictMode>
+      <NextQueryParamProvider>
+        <Component {...pageProps} />
+      </NextQueryParamProvider>
+    </React.StrictMode>
   );
 }
 

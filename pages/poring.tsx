@@ -14,61 +14,84 @@ interface IPoring {
 function Poring() {
   const router = useRouter();
   const [porings, setPorings] = useState<IPoring[]>([]);
-  let poringUnits = 0;
-  let clientHeight = 0;
-  let clientWidth = 0;
+  const [mounted, setMounted] = useState(false);
+  const [clientHeight, setClientHeight] = useState(0);
+  const [clientWidth, setClientWidth] = useState(0);
+  const [poringUnits, setPoringUnits] = useState(10);
+  const [width, setWidth] = useState(50);
+  const [height, setHeight] = useState(50);
+
+  useEffect(() => {
+    if (!mounted) {
+      setMounted(true);
+      console.log('00');
+      setClientHeight(document.getElementById('bun')?.offsetHeight || 0);
+      setClientWidth(document.getElementById('bun')?.offsetWidth || 0);
+      console.log(poringUnits);
+      for (let index = 0; index < poringUnits; index++) {
+        console.log('01');
+        addUnits();
+        moveMent();
+      }
+    }
+    console.log(1);
+  }, []);
 
   const random = (min: number, max: number) => {
     return Math.floor(Math.random() * (max - min) + min);
   };
 
-  useEffect(() => {
+  const checkRouter = () => {
     if (router?.query != undefined) {
-      poringUnits = parseInt(`${router.query.units}`);
+      setPoringUnits(parseInt(`${router.query.units}`));
     }
-    clientHeight = document.getElementById('bun')?.offsetHeight || 0;
-    clientWidth = document.getElementById('bun')?.offsetWidth || 0;
-    console.log(poringUnits);
-  }, []);
+  };
 
-  useEffect(() => {
-    const maxHeight = clientHeight;
-    const minHeight = (75 * maxHeight) / 100;
+  const moveMentX = () => {
     const maxWidth = clientWidth;
-    const minWidth = (0 * maxWidth) / 100;
+    const minWidth = (15 * maxWidth) / 100;
+    let positionX = random(minWidth, maxWidth);
+    if (positionX <= minWidth + width) positionX = maxWidth + width;
+    if (positionX >= maxWidth - width) positionX = maxWidth - width;
+    console.log('X', minWidth, maxWidth, positionX);
+    return positionX;
+  };
 
+  const moveMentY = () => {
+    const maxHeight = clientHeight;
+    const minHeight = (60 * maxHeight) / 100;
+    let positionY = random(minHeight, maxHeight);
+    if (positionY <= minHeight + height) positionY = maxHeight + height;
+    if (positionY >= maxHeight - height) positionY = maxHeight - height;
+    console.log('Y', minHeight, maxHeight, positionY);
+    return positionY;
+  };
+
+  const addUnits = () => {
+    setPorings((items) => [
+      ...items,
+      {
+        id: items.length + 1,
+        sprite: '/poring.gif',
+        width: width,
+        height: height,
+        positionX: moveMentX(),
+        positionY: moveMentY(),
+      },
+    ]);
+  };
+
+  const moveMent = () => {
+    porings.map((poring) => {
+      poring.positionX = moveMentX();
+      poring.positionY = moveMentY();
+      return poring;
+    });
+    setPorings(porings);
     setInterval(() => {
-      let positionX = random(minWidth, maxWidth);
-      let positionY = random(minHeight, maxHeight);
-      const width = 50;
-      const height = 50;
-
-      if (positionX <= minWidth) positionX = maxWidth + width;
-      if (positionX >= maxWidth) positionX = maxWidth - width;
-
-      if (positionY <= minHeight) positionY = maxHeight + height;
-      if (positionY >= maxHeight) positionY = maxHeight - height;
-
-      const items: IPoring[] = [];
-      items.push({
-        id: items.length + 1,
-        sprite: '/poring.gif',
-        width: width,
-        height: height,
-        positionX: positionX,
-        positionY: positionY,
-      });
-      items.push({
-        id: items.length + 1,
-        sprite: '/poring.gif',
-        width: width,
-        height: height,
-        positionX: positionX,
-        positionY: positionY,
-      });
-      setPorings(items);
-    }, 3000);
-  }, []);
+      moveMent();
+    }, 2000);
+  };
 
   return (
     <>
