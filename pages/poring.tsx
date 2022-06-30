@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 interface IPoring {
   id: number;
   sprite: string;
+  facing: string;
   width: number;
   height: number;
   positionX: number;
@@ -10,9 +11,9 @@ interface IPoring {
 }
 
 function Poring() {
+  const screenRef = useRef(null);
   const router = useRouter();
   const [porings, setPorings] = useState<IPoring[]>([]);
-  const screenRef = useRef(null);
   const [height, setHeight] = useState(0);
   const [width, setWidth] = useState(0);
 
@@ -39,13 +40,15 @@ function Poring() {
   };
 
   const poringData = () => {
+    const curFacing = randomFacing();
     const item: IPoring = {
       id: random(99999999, 1000000000),
+      facing: curFacing,
       sprite: '/poring.gif',
       width: 50,
       height: 50,
-      positionX: moveMentX(null),
-      positionY: moveMentY(null),
+      positionX: moveMentX(curFacing),
+      positionY: moveMentY(curFacing),
     };
     return item;
   };
@@ -54,74 +57,61 @@ function Poring() {
     return Math.floor(Math.random() * (max - min) + min);
   };
 
+  const randomFacing = (): string => {
+    const facings = ['left', 'right'];
+    const facing = facings[Math.floor(Math.random() * facings.length)];
+    return facing;
+  };
+
   const moveMent = (id: number) => {
     setPorings((current) =>
       current.map((obj) => {
         if (obj.id === id) {
+          const facing = randomFacing();
           return {
             ...obj,
-            positionX: moveMentX(obj.positionX),
-            positionY: moveMentY(obj.positionY),
+            facing: facing,
+            positionX: moveMentX(facing, obj.positionX),
+            positionY: moveMentY(facing, obj.positionY),
           };
         }
         return obj;
       }),
     );
-    const nextExecutionTime = random(2000, 8000);
+    const nextExecutionTime = random(6000, 12000);
     setTimeout(() => {
       moveMent(id);
     }, nextExecutionTime);
   };
 
-  // const littleMove = () => {
-  //   const items = random(0, 200);
-  //   if (checkLeft()) return items * -1;
-  //   return items;
-  // };
+  const moveMentX = (facing: string, position?: number): number => {
+    const maxPosition = getScreenWidth();
+    const minPosition = (15 * maxPosition) / 100;
+    const movPosition = random(0, 200);
 
-  const checkLeft = () => {
-    const items = [true, false];
-    const item = items[Math.floor(Math.random() * items.length)];
-    return item;
+    if (!position) position = random(minPosition, maxPosition);
+    if (facing === 'left') position -= movPosition;
+    else position += movPosition;
+
+    if (position <= minPosition + width) position = minPosition + width;
+    if (position >= maxPosition - width) position = maxPosition - width;
+
+    return position;
   };
 
-  const moveMentX = (currentPositionX: number | null): number => {
-    const maxWidth = getScreenWidth();
-    const minWidth = (60 * maxWidth) / 100;
-    const positionX = random(0, 200);
-    if (currentPositionX) {
-      currentPositionX = random(100, 100);
-    }
-    if (checkLeft()) {
-      currentPositionX! -= positionX;
-    } else {
-      currentPositionX! += positionX;
-    }
-    console.log('cur2 : ', currentPositionX);
-    if (currentPositionX! <= minWidth + width) currentPositionX = minWidth + width;
-    if (currentPositionX! >= maxWidth - width) currentPositionX = maxWidth - width;
-    return currentPositionX!;
-  };
+  const moveMentY = (facing: string, position?: number): number => {
+    const maxPosition = getScreenHeight();
+    const minPosition = (60 * maxPosition) / 100;
+    const movPosition = random(0, 200);
 
-  const moveMentY = (currentPositionY: number | null): number => {
-    const maxHeight = getScreenHeight();
-    const minHeight = (60 * maxHeight) / 100;
-    console.log(minHeight, maxHeight);
-    const positionY = random(0, 200);
-    if (currentPositionY) {
-      currentPositionY = random(minHeight, maxHeight);
-    }
+    if (!position) position = random(minPosition, maxPosition);
+    if (facing === 'left') position -= movPosition;
+    else position += movPosition;
 
-    if (checkLeft()) {
-      currentPositionY! -= positionY;
-    } else {
-      currentPositionY! += positionY;
-    }
-    console.log('cur2 : ', currentPositionY);
+    if (position <= minPosition + height) position = minPosition + height;
+    if (position >= maxPosition - height) position = maxPosition - height;
 
-    if (currentPositionY! <= minHeight + height) currentPositionY = minHeight + height;
-    if (currentPositionY! >= maxHeight - height) currentPositionY = maxHeight - height;
-    return currentPositionY!;
+    return position;
   };
 
   return (
@@ -142,19 +132,26 @@ function Poring() {
     >
       {porings.map((poring) => {
         return (
-          <img
+          <div
             key={poring.id}
-            className="absolute"
-            src={poring.sprite}
-            alt=""
             style={{
               position: 'absolute',
               width: poring.width,
               height: poring.height,
               transform: `translate(${poring.positionX}px, ${poring.positionY}px)`,
-              transitionDuration: '6000ms',
+              transition: `transform 6s`,
             }}
-          />
+          >
+            <img
+              className="absolute"
+              src={poring.sprite}
+              alt=""
+              style={{
+                transform: `rotateY(-${poring.facing === 'right' ? 180 : 0}deg)`,
+                transition: `transform 0s`,
+              }}
+            />
+          </div>
         );
       })}
     </div>
