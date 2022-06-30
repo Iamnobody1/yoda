@@ -13,8 +13,11 @@ interface IPoring {
 function Poring() {
   const router = useRouter();
   const [porings, setPorings] = useState<IPoring[]>([]);
-  const [clientHeight, setClientHeight] = useState(0);
-  const [clientWidth, setClientWidth] = useState(0);
+  // const [clientHeight, setClientHeight] = useState(0);
+  // const [clientWidth, setClientWidth] = useState(0);
+  // const clientHeight = 0;
+  // const clientWidth = 0;
+  const screenRef = useRef(null);
   const [height, setHeight] = useState(0);
   const [width, setWidth] = useState(0);
   const heightRef = useRef(0);
@@ -38,9 +41,15 @@ function Poring() {
       }
       setPorings(items);
     }
-  }, [router]);
+  }, [router, screenRef]);
 
-  
+  const getScreenWidtth = () => {
+    return screenRef.current ? screenRef.current.offsetWidth : 0;
+  };
+
+  const getScreenHeight = () => {
+    return screenRef.current ? screenRef.current.offsetHeight : 0;
+  };
 
   const poringData = () => {
     const item: IPoring = {
@@ -64,7 +73,7 @@ function Poring() {
         if (obj.id === id) {
           return {
             ...obj,
-            positionX: moveMentX(),
+            positionX: obj.positionX - 100,
             positionY: moveMentY(),
           };
         }
@@ -77,8 +86,14 @@ function Poring() {
     }, nextExecutionTime);
   };
 
+  const checkLeft = () => {
+    const items = [true, false];
+    const item = items[Math.floor(Math.random() * items.length)];
+    return item;
+  }
+
   const moveMentX = () => {
-    const maxWidth = clientWidth;
+    const maxWidth = getScreenWidtth();
     const minWidth = (15 * maxWidth) / 100;
     let positionX = random(minWidth, maxWidth);
     if (positionX <= minWidth + width) positionX = maxWidth + width;
@@ -87,7 +102,7 @@ function Poring() {
   };
 
   const moveMentY = () => {
-    const maxHeight = clientHeight;
+    const maxHeight = getScreenHeight();
     const minHeight = (60 * maxHeight) / 100;
     let positionY = random(minHeight, maxHeight);
     if (positionY <= minHeight + height) positionY = maxHeight + height;
@@ -95,8 +110,14 @@ function Poring() {
     return positionY;
   };
 
+  const x = () => {
+    if (screenRef.current) {
+    }
+  };
+
   return (
     <div
+      ref={screenRef}
       id="bun"
       className="overflow-hidden"
       style={{
