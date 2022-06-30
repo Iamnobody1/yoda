@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 interface IPoring {
   id: number;
+  health: number;
   sprite: string;
   facing: string;
   width: number;
@@ -44,11 +45,12 @@ function Poring() {
     const item: IPoring = {
       id: random(99999999, 1000000000),
       facing: curFacing,
+      health: 5,
       sprite: '/poring.gif',
       width: 50,
       height: 50,
       positionX: moveMentX(curFacing),
-      positionY: moveMentY(curFacing),
+      positionY: moveMentY(),
     };
     return item;
   };
@@ -72,7 +74,7 @@ function Poring() {
             ...obj,
             facing: facing,
             positionX: moveMentX(facing, obj.positionX),
-            positionY: moveMentY(facing, obj.positionY),
+            positionY: moveMentY(obj.positionY),
           };
         }
         return obj;
@@ -83,6 +85,36 @@ function Poring() {
       moveMent(id);
     }, nextExecutionTime);
   };
+
+  const attack = (id: number): void => {
+    setPorings((currents) =>
+      currents.map((current) => {
+        if (current.id === id) {
+          return {
+            ...current,
+            health: current.health - 1,
+          };
+        }
+        return current;
+      }),
+    );
+  };
+
+  const respawn = (id: number): void => {
+    setPorings((currents) =>
+      currents.map((current) => {
+        if (current.id === id && current.health === 0) {
+          return {
+            ...current,
+            health: current.health + 1,
+          };
+        }
+        return current;
+      }),
+    );
+  };
+
+  // const isDead = () => [];
 
   const moveMentX = (facing: string, position?: number): number => {
     const maxPosition = getScreenWidth();
@@ -99,13 +131,13 @@ function Poring() {
     return position;
   };
 
-  const moveMentY = (facing: string, position?: number): number => {
+  const moveMentY = (position?: number): number => {
     const maxPosition = getScreenHeight();
     const minPosition = (60 * maxPosition) / 100;
     const movPosition = random(0, 200);
-
+    const checkTrue = randomFacing();
     if (!position) position = random(minPosition, maxPosition);
-    if (facing === 'left') position -= movPosition;
+    if (checkTrue === 'left') position -= movPosition;
     else position += movPosition;
 
     if (position <= minPosition + height) position = minPosition + height;
@@ -135,6 +167,7 @@ function Poring() {
           <div
             key={poring.id}
             style={{
+              display: poring.health === 0 ? 'none' : '',
               position: 'absolute',
               width: poring.width,
               height: poring.height,
@@ -143,6 +176,7 @@ function Poring() {
             }}
           >
             <img
+              onClick={() => attack(poring.id)}
               className="absolute"
               src={poring.sprite}
               alt=""
