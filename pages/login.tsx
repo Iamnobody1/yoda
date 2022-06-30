@@ -102,7 +102,7 @@ const Login = () => {
                       clipRule="evenodd"
                     />
                   </span>
-                  <Link href='/'>
+                  <Link href="/">
                     <a>Sign in </a>
                   </Link>
                 </button>
