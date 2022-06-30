@@ -12,8 +12,8 @@ interface IPoring {
 function Poring() {
   const router = useRouter();
   const [porings, setPorings] = useState<IPoring[]>([]);
-  const [clientHeight, setClientHeight] = useState(0);
-  const [clientWidth, setClientWidth] = useState(0);
+  // const [clientHeight, setClientHeight] = useState(0);
+  // const [clientWidth, setClientWidth] = useState(0);
   // const clientHeight = 0;
   // const clientWidth = 0;
   const screenRef = useRef(null);
@@ -24,8 +24,8 @@ function Poring() {
     console.log('useEffect []');
     if (router.asPath !== router.route) {
       console.log(router.query.units);
-      setClientHeight(getScreenHeight());
-      setClientWidth(getScreenWidtth());
+      // setClientHeight(getScreenHeight());
+      // setClientWidth(getScreenWidtth());
       setHeight(50);
       setWidth(50);
       const items: IPoring[] = [];
@@ -82,8 +82,7 @@ function Poring() {
   };
 
   const moveMentX = () => {
-    console.log('clientWidth : ', clientWidth);
-    const maxWidth = clientWidth;
+    const maxWidth = getScreenWidtth();
     const minWidth = (15 * maxWidth) / 100;
     let positionX = random(minWidth, maxWidth);
     if (positionX <= minWidth + width) positionX = maxWidth + width;
@@ -92,7 +91,7 @@ function Poring() {
   };
 
   const moveMentY = () => {
-    const maxHeight = clientHeight;
+    const maxHeight = getScreenHeight();
     const minHeight = (60 * maxHeight) / 100;
     let positionY = random(minHeight, maxHeight);
     if (positionY <= minHeight + height) positionY = maxHeight + height;
@@ -101,14 +100,13 @@ function Poring() {
   };
 
   const x = () => {
-    setClientHeight(getScreenHeight());
-    setClientWidth(getScreenWidtth());
+    if (screenRef.current) {
+    }
   };
 
   return (
     <div
       ref={screenRef}
-      onResize={x()}
       id="bun"
       className="overflow-hidden"
       style={{
