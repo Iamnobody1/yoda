@@ -12,20 +12,12 @@ interface IPoring {
 function Poring() {
   const router = useRouter();
   const [porings, setPorings] = useState<IPoring[]>([]);
-  // const [clientHeight, setClientHeight] = useState(0);
-  // const [clientWidth, setClientWidth] = useState(0);
-  // const clientHeight = 0;
-  // const clientWidth = 0;
   const screenRef = useRef(null);
   const [height, setHeight] = useState(0);
   const [width, setWidth] = useState(0);
 
   useEffect(() => {
-    console.log('useEffect []');
     if (router.asPath !== router.route) {
-      console.log(router.query.units);
-      // setClientHeight(getScreenHeight());
-      // setClientWidth(getScreenWidtth());
       setHeight(50);
       setWidth(50);
       const items: IPoring[] = [];
@@ -38,7 +30,7 @@ function Poring() {
     }
   }, [router, screenRef]);
 
-  const getScreenWidtth = () => {
+  const getScreenWidth = () => {
     return screenRef.current ? screenRef.current.offsetWidth : 0;
   };
 
@@ -52,8 +44,8 @@ function Poring() {
       sprite: '/poring.gif',
       width: 50,
       height: 50,
-      positionX: moveMentX(),
-      positionY: moveMentY(),
+      positionX: moveMentX(null),
+      positionY: moveMentY(null),
     };
     return item;
   };
@@ -68,40 +60,68 @@ function Poring() {
         if (obj.id === id) {
           return {
             ...obj,
-            positionX: moveMentX(),
-            positionY: moveMentY(),
+            positionX: moveMentX(obj.positionX),
+            positionY: moveMentY(obj.positionY),
           };
         }
         return obj;
       }),
     );
-    const nextExecutionTime = random(4000, 6000);
+    const nextExecutionTime = random(2000, 8000);
     setTimeout(() => {
       moveMent(id);
     }, nextExecutionTime);
   };
 
-  const moveMentX = () => {
-    const maxWidth = getScreenWidtth();
-    const minWidth = (15 * maxWidth) / 100;
-    let positionX = random(minWidth, maxWidth);
-    if (positionX <= minWidth + width) positionX = maxWidth + width;
-    if (positionX >= maxWidth - width) positionX = maxWidth - width;
-    return positionX;
+  // const littleMove = () => {
+  //   const items = random(0, 200);
+  //   if (checkLeft()) return items * -1;
+  //   return items;
+  // };
+
+  const checkLeft = () => {
+    const items = [true, false];
+    const item = items[Math.floor(Math.random() * items.length)];
+    return item;
   };
 
-  const moveMentY = () => {
+  const moveMentX = (currentPositionX: number | null): number => {
+    const maxWidth = getScreenWidth();
+    const minWidth = (60 * maxWidth) / 100;
+    const positionX = random(0, 200);
+    if (currentPositionX) {
+      currentPositionX = random(100, 100);
+    }
+    if (checkLeft()) {
+      currentPositionX! -= positionX;
+    } else {
+      currentPositionX! += positionX;
+    }
+    console.log('cur2 : ', currentPositionX);
+    if (currentPositionX! <= minWidth + width) currentPositionX = minWidth + width;
+    if (currentPositionX! >= maxWidth - width) currentPositionX = maxWidth - width;
+    return currentPositionX!;
+  };
+
+  const moveMentY = (currentPositionY: number | null): number => {
     const maxHeight = getScreenHeight();
     const minHeight = (60 * maxHeight) / 100;
-    let positionY = random(minHeight, maxHeight);
-    if (positionY <= minHeight + height) positionY = maxHeight + height;
-    if (positionY >= maxHeight - height) positionY = maxHeight - height;
-    return positionY;
-  };
-
-  const x = () => {
-    if (screenRef.current) {
+    console.log(minHeight, maxHeight);
+    const positionY = random(0, 200);
+    if (currentPositionY) {
+      currentPositionY = random(minHeight, maxHeight);
     }
+
+    if (checkLeft()) {
+      currentPositionY! -= positionY;
+    } else {
+      currentPositionY! += positionY;
+    }
+    console.log('cur2 : ', currentPositionY);
+
+    if (currentPositionY! <= minHeight + height) currentPositionY = minHeight + height;
+    if (currentPositionY! >= maxHeight - height) currentPositionY = maxHeight - height;
+    return currentPositionY!;
   };
 
   return (
