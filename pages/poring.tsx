@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 interface IPoring {
   id: number;
@@ -14,6 +14,9 @@ function Poring() {
   const [porings, setPorings] = useState<IPoring[]>([]);
   const [clientHeight, setClientHeight] = useState(0);
   const [clientWidth, setClientWidth] = useState(0);
+  // const clientHeight = 0;
+  // const clientWidth = 0;
+  const screenRef = useRef(null);
   const [height, setHeight] = useState(0);
   const [width, setWidth] = useState(0);
 
@@ -21,8 +24,8 @@ function Poring() {
     console.log('useEffect []');
     if (router.asPath !== router.route) {
       console.log(router.query.units);
-      setClientHeight(document.getElementById('bun')?.offsetHeight || 0);
-      setClientWidth(document.getElementById('bun')?.offsetWidth || 0);
+      setClientHeight(getScreenHeight());
+      setClientWidth(getScreenWidtth());
       setHeight(50);
       setWidth(50);
       const items: IPoring[] = [];
@@ -33,7 +36,15 @@ function Poring() {
       }
       setPorings(items);
     }
-  }, [router]);
+  }, [router, screenRef]);
+
+  const getScreenWidtth = () => {
+    return screenRef.current ? screenRef.current.offsetWidth : 0;
+  };
+
+  const getScreenHeight = () => {
+    return screenRef.current ? screenRef.current.offsetHeight : 0;
+  };
 
   const poringData = () => {
     const item: IPoring = {
@@ -71,6 +82,7 @@ function Poring() {
   };
 
   const moveMentX = () => {
+    console.log('clientWidth : ', clientWidth);
     const maxWidth = clientWidth;
     const minWidth = (15 * maxWidth) / 100;
     let positionX = random(minWidth, maxWidth);
@@ -88,8 +100,15 @@ function Poring() {
     return positionY;
   };
 
+  const x = () => {
+    setClientHeight(getScreenHeight());
+    setClientWidth(getScreenWidtth());
+  };
+
   return (
     <div
+      ref={screenRef}
+      onResize={x()}
       id="bun"
       className="overflow-hidden"
       style={{
