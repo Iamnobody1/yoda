@@ -27,6 +27,7 @@ function Poring() {
         const item = poringData();
         items.push(item);
         moveMent(item.id);
+        respawn(item.id);
       }
       setPorings(items);
     }
@@ -104,14 +105,20 @@ function Poring() {
     setPorings((currents) =>
       currents.map((current) => {
         if (current.id === id && current.health === 0) {
+          const fullHealth = 5;
           return {
             ...current,
-            health: current.health + 1,
+            health: fullHealth,
           };
         }
         return current;
       }),
     );
+    console.log('used');
+    const nextExecutionTime = random(6000, 12000);
+    setTimeout(() => {
+      respawn(id);
+    }, nextExecutionTime);
   };
 
   // const isDead = () => [];
