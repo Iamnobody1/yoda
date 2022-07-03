@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { setInterval } from 'timers/promises';
 interface IPoring {
   id: number;
@@ -32,12 +32,16 @@ function Poring() {
         items.push(item);
         moveMent(item.id);
         respawn(item.id);
+        // const item = get();
+        // items.push(item);
+        // moveMent(item.id);
+        // respawn(item.id);
       }
       setPorings(items);
     }
-    setInterval(() => {
-      // get()
-    }, 1000);
+    // setInterval(() => {
+    //   // get()
+    // }, 1000);
   }, [router, screenRef]);
 
   const getScreenWidth = () => {
@@ -49,18 +53,15 @@ function Poring() {
   };
 
   const get = () => {
-    const result = axios.get<IPoring[]>('https://jsonplaceholder.typicode.com/todos/1');
-
-    setPorings((current) =>
-      current.map((obj) => {
-        const facing = randomFacing();
-        return {
-          ...obj,
-        };
-        return obj;
-      }),
+    const result: AxiosResponse<IPoring> = axios.get(
+      'https://jsonplaceholder.typicode.com/todos/1',
     );
+    return result;
   };
+
+  // const put = () => {
+  //   return null;
+  // };
 
   const poringData = () => {
     const curFacing = randomFacing();
