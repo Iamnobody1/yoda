@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
+import axios from 'axios';
+import { setInterval } from 'timers/promises';
 interface IPoring {
   id: number;
   health: number;
@@ -18,6 +20,8 @@ function Poring() {
   const [height, setHeight] = useState(0);
   const [width, setWidth] = useState(0);
 
+  const axios = require('axios');
+
   useEffect(() => {
     if (router.asPath !== router.route) {
       setHeight(50);
@@ -31,6 +35,9 @@ function Poring() {
       }
       setPorings(items);
     }
+    setInterval(() => {
+      // get()
+    }, 1000);
   }, [router, screenRef]);
 
   const getScreenWidth = () => {
@@ -39,6 +46,20 @@ function Poring() {
 
   const getScreenHeight = () => {
     return screenRef.current ? screenRef.current.offsetHeight : 0;
+  };
+
+  const get = () => {
+    const result = axios.get<IPoring[]>('https://jsonplaceholder.typicode.com/todos/1');
+
+    setPorings((current) =>
+      current.map((obj) => {
+        const facing = randomFacing();
+        return {
+          ...obj,
+        };
+        return obj;
+      }),
+    );
   };
 
   const poringData = () => {
