@@ -1,99 +1,60 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { NextPage } from 'next';
-interface IPoring {
+import axios from 'axios';
+
+interface IMapMonster {
   id: number;
-  sprite: string;
-  width: number;
-  height: number;
+  mapId: number;
+  monsterId: number;
+  currentHealth: number;
+  facing: string;
   positionX: number;
   positionY: number;
+  monster: IMonster;
 }
 
-const Poring: NextPage = () => {
+interface IMonster {
+  id: number;
+  health: number;
+  sprite: string;
+  facing: string;
+  width: number;
+  height: number;
+}
+
+function Poring() {
+  const screenRef = useRef(null);
   const router = useRouter();
-  const [porings, setPorings] = useState<IPoring[]>([]);
-  const [clientHeight, setClientHeight] = useState(0);
-  const [clientWidth, setClientWidth] = useState(0);
-  const [height, setHeight] = useState(0);
-  const [width, setWidth] = useState(0);
-  const bunRef = useRef(null);
+  const [mapMonsters, setMapMonsters] = useState<IMapMonster[]>([]);
 
   useEffect(() => {
-    if (bunRef) {
-      console.log(bunRef?.current?.offsetWidth!);
-    }
-    console.log('useEffect []');
     if (router.asPath !== router.route) {
-      console.log(router.query.units);
-      setHeight(50);
-      setWidth(50);
-      const items: IPoring[] = [];
-      for (let i = 0; i < parseInt(`${router.query.units}`); i++) {
-        const item = poringData();
-        items.push(item);
-        moveMent(item.id);
-      }
-      setPorings(items);
+      setInterval(() => {
+        apiGetData();
+      }, 1000);
     }
-  }, [router, bunRef]);
+  }, [router, screenRef]);
 
-  const poringData = () => {
-    const item: IPoring = {
-      id: random(99999999, 1000000000),
-      sprite: '/poring.gif',
-      width: 50,
-      height: 50,
-      positionX: moveMentX(),
-      positionY: moveMentY(),
-    };
-    return item;
+  const apiGetData = (): void => {
+    axios.get<IMapMonster[]>('https://localhost:5001/map-monsters?mapId=1').then((response) => {
+      setMapMonsters(response.data);
+    });
   };
 
-  const random = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min) + min);
-  };
-
-  const moveMent = (id: number) => {
-    setPorings((current) =>
-      current.map((obj) => {
-        if (obj.id === id) {
-          return {
-            ...obj,
-            positionX: moveMentX(),
-            positionY: moveMentY(),
-          };
-        }
-        return obj;
-      }),
+  const apiDecrementHealth = (mapMonsterId: number): void => {
+    axios.put<IMapMonster[]>(
+      `https://localhost:5001/map-monsters/${mapMonsterId}?currentHealth=-1`,
     );
-    const nextExecutionTime = random(4000, 6000);
-    setTimeout(() => {
-      moveMent(id);
-    }, nextExecutionTime);
   };
 
-  const moveMentX = () => {
-    const maxWidth = WidthRef.current;
-    const minWidth = (15 * maxWidth) / 100;
-    let positionX = random(minWidth, maxWidth);
-    if (positionX <= minWidth + width) positionX = maxWidth + width;
-    if (positionX >= maxWidth - width) positionX = maxWidth - width;
-    return positionX;
-  };
-
-  const moveMentY = () => {
-    const maxHeight = clientHeight;
-    const minHeight = (60 * maxHeight) / 100;
-    let positionY = random(minHeight, maxHeight);
-    if (positionY <= minHeight + height) positionY = maxHeight + height;
-    if (positionY >= maxHeight - height) positionY = maxHeight - height;
-    return positionY;
+  const attack = (id: number): void => {
+    apiDecrementHealth(id);
   };
 
   return (
     <div
-      ref={bunRef}
+      ref={screenRef}
+      id="bun"
       className="overflow-hidden"
       style={{
         position: 'fixed',
@@ -106,25 +67,36 @@ const Poring: NextPage = () => {
         backgroundSize: 'cover',
       }}
     >
-      {porings.map((poring) => {
+      {mapMonsters.map((mapMonster) => {
         return (
-          <img
-            key={poring.id}
-            className="absolute"
-            src={poring.sprite}
-            alt=""
+          <div
+            key={`${mapMonster.id}`}
             style={{
+              display: mapMonster.monster.health === 0 ? 'none' : '',
               position: 'absolute',
-              width: poring.width,
-              height: poring.height,
-              transform: `translate(${poring.positionX}px, ${poring.positionY}px)`,
-              transitionDuration: '6000ms',
+              width: mapMonster.monster.width,
+              height: mapMonster.monster.height,
+              transform: `translate(${mapMonster.positionX}px, ${mapMonster.positionY}px)`,
+              transition: `transform 6s`,
             }}
-          />
+          >
+            <img
+              onClick={() => attack(mapMonster.id)}
+              className="absolute"
+              src={mapMonster.monster.sprite}
+              height={mapMonster.monster.height}
+              width={mapMonster.monster.width}
+              alt=""
+              style={{
+                transform: `rotateY(-${mapMonster.facing === 'right' ? 180 : 0}deg)`,
+                transition: `transform 0s`,
+              }}
+            />
+          </div>
         );
       })}
     </div>
   );
-};
+}
 
 export default Poring;
