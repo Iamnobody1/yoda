@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
 import axios from 'axios';
 
 interface IMapMonster {
@@ -24,16 +23,17 @@ interface IMonster {
 
 function Poring() {
   const screenRef = useRef(null);
-  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [mapMonsters, setMapMonsters] = useState<IMapMonster[]>([]);
 
   useEffect(() => {
-    if (router.asPath !== router.route) {
+    if (!mounted) {
+      setMounted(true);
       setInterval(() => {
         apiGetData();
       }, 1000);
     }
-  }, [router, screenRef]);
+  }, [mapMonsters, screenRef]);
 
   const apiGetData = (): void => {
     axios.get<IMapMonster[]>('https://localhost:5001/map-monsters?mapId=1').then((response) => {
@@ -43,7 +43,7 @@ function Poring() {
 
   const apiDecrementHealth = (mapMonsterId: number): void => {
     axios.put<IMapMonster[]>(
-      `https://localhost:5001/map-monsters/${mapMonsterId}?currentHealth=-1`,
+      `https://localhost:5001/map-monsters/${mapMonsterId}/decrement-health?value=1`,
     );
   };
 
@@ -72,7 +72,7 @@ function Poring() {
           <div
             key={`${mapMonster.id}`}
             style={{
-              display: mapMonster.monster.health === 0 ? 'none' : '',
+              display: mapMonster.currentHealth === 0 ? 'none' : '',
               position: 'absolute',
               width: mapMonster.monster.width,
               height: mapMonster.monster.height,
