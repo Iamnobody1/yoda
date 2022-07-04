@@ -1,7 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import axios, { AxiosResponse } from 'axios';
-import { setInterval } from 'timers/promises';
+import axios from 'axios';
+
+interface IMapMonster {
+  id: number;
+  mapId: number;
+  monsterId: number;
+  currentHealth: number;
+  facing: string;
+  positionX: number;
+  positionY: number;
+  monster: IMonster;
+}
+
 interface IMonster {
   id: number;
   health: number;
@@ -9,72 +20,108 @@ interface IMonster {
   facing: string;
   width: number;
   height: number;
-  positionX: number;
-  positionY: number;
 }
 
 function Poring() {
   const screenRef = useRef(null);
   const router = useRouter();
-  const [porings, setPorings] = useState<IMonster[]>([]);
-  const [height, setHeight] = useState(0);
-  const [width, setWidth] = useState(0);
-
-  // const axios = require('axios');
+  const [mapMonsters, setMapMonsters] = useState<IMapMonster[]>([]);
 
   useEffect(() => {
     if (router.asPath !== router.route) {
-      setHeight(50);
-      setWidth(50);
-      const items: IMonster[] = [];
-      for (let i = 0; i < parseInt(`${router.query.units}`); i++) {
-        //const item = poringData();
-        const item = get();
-        items.push(item);
-        moveMent(item.id);
-        respawn(item.id);
-      }
-      setPorings(items);
+      setInterval(() => {
+        apiGetData();
+      }, 1000);
     }
-    // setInterval(() => {
-    //   // get()
-    // }, 1000);
   }, [router, screenRef]);
 
-  const getScreenWidth = () => {
-    return screenRef.current ? screenRef.current.offsetWidth : 0;
-  };
-
-  const getScreenHeight = () => {
-    return screenRef.current ? screenRef.current.offsetHeight : 0;
-  };
-
-  // AxiosResponse<IPoring>
-
-  const get = (): void => {
-    axios.get<IMonster[]>('https://jsonplaceholder.typicode.com/todos/1').then((response) => {
-      console.log(response.data);
-      setPorings(response.data);
+  const apiGetData = (): void => {
+    axios.get<IMapMonster[]>('https://localhost:5001/map-monsters?mapId=1').then((response) => {
+      setMapMonsters(response.data);
     });
   };
 
-  // const put = () => {
-  //   return null;
-  // };
+  const minPositionY = () => {
+    return (60 * maxPositionY()) / 100;
+  };
 
-  const poringData = () => {
-    const curFacing = randomFacing();
-    const item: IMonster = {
-      id: random(99999999, 1000000000),
-      facing: curFacing,
-      health: 5,
-      sprite: '/poring.gif',
-      width: 50,
-      height: 50,
-      positionX: moveMentX(curFacing),
-      positionY: moveMentY(),
-    };
-    return item;
+  const maxPositionY = () => {
+    return screenRef.current ? screenRef.current.offsetHeight : 0;
+  };
+
+  const minPositionX = () => {
+    return (15 * maxPositionX()) / 100;
+  };
+
+  const maxPositionX = () => {
+    return screenRef.current ? screenRef.current.offsetWidth : 0;
+  };
+
+  const attack = (id: number): void => {
+    setMapMonsters((currents) =>
+      currents.map((current) => {
+        if (current.id === id) {
+          return {
+            ...current,
+            health: current.currentHealth - 1,
+          };
+        }
+        return current;
+      }),
+    );
+  };
+
+  const moveMent = (id: number) => {
+    setMapMonsters((current) =>
+      current.map((obj) => {
+        if (obj.id === id) {
+          const facing = randomFacing();
+          return {
+            ...obj,
+            facing: facing,
+            positionX: moveMentX(obj),
+            positionY: moveMentY(obj),
+          };
+        }
+        return obj;
+      }),
+    );
+    const nextExecutionTime = random(6000, 12000);
+    setTimeout(() => {
+      moveMent(id);
+    }, nextExecutionTime);
+  };
+
+  const moveMentX = (mapMonster: IMapMonster): number => {
+    const facing = mapMonster.facing;
+    const width = mapMonster.monster.width;
+    let curPositionX = mapMonster.positionX;
+    const movPosition = random(0, 200);
+
+    if (!curPositionX) curPositionX = random(minPositionX(), maxPositionX());
+    if (facing === 'left') curPositionX -= movPosition;
+    else curPositionX += movPosition;
+
+    if (curPositionX <= minPositionX() + width) curPositionX = minPositionX() + width;
+    if (curPositionX >= maxPositionX() - width) curPositionX = maxPositionX() - width;
+
+    return curPositionX;
+  };
+
+  const moveMentY = (mapMonster: IMapMonster): number => {
+    const facing = mapMonster.facing;
+    const height = mapMonster.monster.height;
+    let curPositionY = mapMonster.positionY;
+    const movPosition = random(0, 200);
+
+    if (!curPositionY) curPositionY = random(minPositionY(), maxPositionY());
+    if (facing === 'left') curPositionY -= movPosition;
+    else curPositionY += movPosition;
+
+    if (curPositionY <= minPositionY() + height) curPositionY = minPositionY() + height;
+    if (curPositionY >= maxPositionY() - height) curPositionY = maxPositionY() - height;
+
+    return curPositionY;
   };
 
   const random = (min: number, max: number) => {
@@ -87,46 +134,10 @@ function Poring() {
     return facing;
   };
 
-  const moveMent = (id: number) => {
-    setPorings((current) =>
-      current.map((obj) => {
-        if (obj.id === id) {
-          const facing = randomFacing();
-          return {
-            ...obj,
-            facing: facing,
-            positionX: moveMentX(facing, obj.positionX),
-            positionY: moveMentY(obj.positionY),
-          };
-        }
-        return obj;
-      }),
-    );
-    const nextExecutionTime = random(6000, 12000);
-    setTimeout(() => {
-      moveMent(id);
-    }, nextExecutionTime);
-  };
-
-  const attack = (id: number): void => {
-    setPorings((currents) =>
-      currents.map((current) => {
-        if (current.id === id) {
-          return {
-            ...current,
-            health: current.health - 1,
-          };
-        }
-        return current;
-      }),
-    );
-    
-  };
-
   const respawn = (id: number): void => {
-    setPorings((currents) =>
+    setMapMonsters((currents) =>
       currents.map((current) => {
-        if (current.id === id && current.health === 0) {
+        if (current.id === id && current.currentHealth === 0) {
           const fullHealth = 5;
           return {
             ...current,
@@ -141,38 +152,6 @@ function Poring() {
     setTimeout(() => {
       respawn(id);
     }, nextExecutionTime);
-  };
-
-  // const isDead = () => [];
-
-  const moveMentX = (facing: string, position?: number): number => {
-    const maxPosition = getScreenWidth();
-    const minPosition = (15 * maxPosition) / 100;
-    const movPosition = random(0, 200);
-
-    if (!position) position = random(minPosition, maxPosition);
-    if (facing === 'left') position -= movPosition;
-    else position += movPosition;
-
-    if (position <= minPosition + width) position = minPosition + width;
-    if (position >= maxPosition - width) position = maxPosition - width;
-
-    return position;
-  };
-
-  const moveMentY = (position?: number): number => {
-    const maxPosition = getScreenHeight();
-    const minPosition = (60 * maxPosition) / 100;
-    const movPosition = random(0, 200);
-    const checkTrue = randomFacing();
-    if (!position) position = random(minPosition, maxPosition);
-    if (checkTrue === 'left') position -= movPosition;
-    else position += movPosition;
-
-    if (position <= minPosition + height) position = minPosition + height;
-    if (position >= maxPosition - height) position = maxPosition - height;
-
-    return position;
   };
 
   return (
@@ -191,26 +170,28 @@ function Poring() {
         backgroundSize: 'cover',
       }}
     >
-      {porings.map((poring) => {
+      {mapMonsters.map((mapMonster) => {
         return (
           <div
-            key={poring.id}
+            key={`${mapMonster.id}`}
             style={{
-              display: poring.health === 0 ? 'none' : '',
+              display: mapMonster.monster.health === 0 ? 'none' : '',
               position: 'absolute',
-              width: poring.width,
-              height: poring.height,
-              transform: `translate(${poring.positionX}px, ${poring.positionY}px)`,
+              width: mapMonster.monster.width,
+              height: mapMonster.monster.height,
+              transform: `translate(${mapMonster.positionX}px, ${mapMonster.positionY}px)`,
               transition: `transform 6s`,
             }}
           >
             <img
-              onClick={() => attack(poring.id)}
+              onClick={() => attack(mapMonster.id)}
               className="absolute"
-              src={poring.sprite}
+              src={mapMonster.monster.sprite}
+              height={mapMonster.monster.height}
+              width={mapMonster.monster.width}
               alt=""
               style={{
-                transform: `rotateY(-${poring.facing === 'right' ? 180 : 0}deg)`,
+                transform: `rotateY(-${mapMonster.facing === 'right' ? 180 : 0}deg)`,
                 transition: `transform 0s`,
               }}
             />
