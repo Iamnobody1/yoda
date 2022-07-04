@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import axios, { AxiosResponse } from 'axios';
 import { setInterval } from 'timers/promises';
-interface IPoring {
+interface IMonster {
   id: number;
   health: number;
   sprite: string;
@@ -16,26 +16,23 @@ interface IPoring {
 function Poring() {
   const screenRef = useRef(null);
   const router = useRouter();
-  const [porings, setPorings] = useState<IPoring[]>([]);
+  const [porings, setPorings] = useState<IMonster[]>([]);
   const [height, setHeight] = useState(0);
   const [width, setWidth] = useState(0);
 
-  const axios = require('axios');
+  // const axios = require('axios');
 
   useEffect(() => {
     if (router.asPath !== router.route) {
       setHeight(50);
       setWidth(50);
-      const items: IPoring[] = [];
+      const items: IMonster[] = [];
       for (let i = 0; i < parseInt(`${router.query.units}`); i++) {
-        const item = poringData();
+        //const item = poringData();
+        const item = get();
         items.push(item);
         moveMent(item.id);
         respawn(item.id);
-        // const item = get();
-        // items.push(item);
-        // moveMent(item.id);
-        // respawn(item.id);
       }
       setPorings(items);
     }
@@ -52,11 +49,13 @@ function Poring() {
     return screenRef.current ? screenRef.current.offsetHeight : 0;
   };
 
-  const get = () => {
-    const result: AxiosResponse<IPoring> = axios.get(
-      'https://jsonplaceholder.typicode.com/todos/1',
-    );
-    return result;
+  // AxiosResponse<IPoring>
+
+  const get = (): void => {
+    axios.get<IMonster[]>('https://jsonplaceholder.typicode.com/todos/1').then((response) => {
+      console.log(response.data);
+      setPorings(response.data);
+    });
   };
 
   // const put = () => {
@@ -65,7 +64,7 @@ function Poring() {
 
   const poringData = () => {
     const curFacing = randomFacing();
-    const item: IPoring = {
+    const item: IMonster = {
       id: random(99999999, 1000000000),
       facing: curFacing,
       health: 5,
@@ -121,6 +120,7 @@ function Poring() {
         return current;
       }),
     );
+    
   };
 
   const respawn = (id: number): void => {
