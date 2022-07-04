@@ -1,8 +1,5 @@
-import React, { useState } from 'react';
-import Poring from './poring';
-
+import React from 'react'
 function Index() {
   return <></>;
 }
-
 export default Index;
