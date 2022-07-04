@@ -43,7 +43,7 @@ function Poring() {
 
   const apiDecrementHealth = (mapMonsterId: number): void => {
     axios.put<IMapMonster[]>(
-      `https://localhost:5001/map-monsters/${mapMonsterId}?currentHealth=-1`,
+      `https://localhost:5001/map-monsters/${mapMonsterId}/decrement-health?currentHealth=-1`,
     );
   };
 
