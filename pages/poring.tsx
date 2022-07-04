@@ -72,7 +72,7 @@ function Poring() {
           <div
             key={`${mapMonster.id}`}
             style={{
-              display: mapMonster.monster.health === 0 ? 'none' : '',
+              display: mapMonster.currentHealth === 0 ? 'none' : '',
               position: 'absolute',
               width: mapMonster.monster.width,
               height: mapMonster.monster.height,
