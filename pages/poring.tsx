@@ -41,117 +41,14 @@ function Poring() {
     });
   };
 
-  const minPositionY = () => {
-    return (60 * maxPositionY()) / 100;
-  };
-
-  const maxPositionY = () => {
-    return screenRef.current ? screenRef.current.offsetHeight : 0;
-  };
-
-  const minPositionX = () => {
-    return (15 * maxPositionX()) / 100;
-  };
-
-  const maxPositionX = () => {
-    return screenRef.current ? screenRef.current.offsetWidth : 0;
+  const apiDecrementHealth = (mapMonsterId: number): void => {
+    axios.put<IMapMonster[]>(
+      `https://localhost:5001/map-monsters/${mapMonsterId}?currentHealth=-1`,
+    );
   };
 
   const attack = (id: number): void => {
-    setMapMonsters((currents) =>
-      currents.map((current) => {
-        if (current.id === id) {
-          return {
-            ...current,
-            health: current.currentHealth - 1,
-          };
-        }
-        return current;
-      }),
-    );
-  };
-
-  const moveMent = (id: number) => {
-    setMapMonsters((current) =>
-      current.map((obj) => {
-        if (obj.id === id) {
-          const facing = randomFacing();
-          return {
-            ...obj,
-            facing: facing,
-            positionX: moveMentX(obj),
-            positionY: moveMentY(obj),
-          };
-        }
-        return obj;
-      }),
-    );
-    const nextExecutionTime = random(6000, 12000);
-    setTimeout(() => {
-      moveMent(id);
-    }, nextExecutionTime);
-  };
-
-  const moveMentX = (mapMonster: IMapMonster): number => {
-    const facing = mapMonster.facing;
-    const width = mapMonster.monster.width;
-    let curPositionX = mapMonster.positionX;
-    const movPosition = random(0, 200);
-
-    if (!curPositionX) curPositionX = random(minPositionX(), maxPositionX());
-    if (facing === 'left') curPositionX -= movPosition;
-    else curPositionX += movPosition;
-
-    if (curPositionX <= minPositionX() + width) curPositionX = minPositionX() + width;
-    if (curPositionX >= maxPositionX() - width) curPositionX = maxPositionX() - width;
-
-    return curPositionX;
-  };
-
-  const moveMentY = (mapMonster: IMapMonster): number => {
-    const facing = mapMonster.facing;
-    const height = mapMonster.monster.height;
-    let curPositionY = mapMonster.positionY;
-    const movPosition = random(0, 200);
-
-    if (!curPositionY) curPositionY = random(minPositionY(), maxPositionY());
-    if (facing === 'left') curPositionY -= movPosition;
-    else curPositionY += movPosition;
-
-    if (curPositionY <= minPositionY() + height) curPositionY = minPositionY() + height;
-    if (curPositionY >= maxPositionY() - height) curPositionY = maxPositionY() - height;
-
-    return curPositionY;
-  };
-
-  const random = (min: number, max: number) => {
-    return Math.floor(Math.random() * (max - min) + min);
-  };
-
-  const randomFacing = (): string => {
-    const facings = ['left', 'right'];
-    const facing = facings[Math.floor(Math.random() * facings.length)];
-    return facing;
-  };
-
-  const respawn = (id: number): void => {
-    setMapMonsters((currents) =>
-      currents.map((current) => {
-        if (current.id === id && current.currentHealth === 0) {
-          const fullHealth = 5;
-          return {
-            ...current,
-            health: fullHealth,
-          };
-        }
-        return current;
-      }),
-    );
-    console.log('used');
-    const nextExecutionTime = random(6000, 12000);
-    setTimeout(() => {
-      respawn(id);
-    }, nextExecutionTime);
+    apiDecrementHealth(id);
   };
 
   return (
