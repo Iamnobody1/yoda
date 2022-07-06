@@ -36,14 +36,14 @@ function Poring() {
   }, [mapMonsters, screenRef]);
 
   const apiGetData = (): void => {
-    axios.get<IMapMonster[]>('https://localhost:5001/map-monsters?mapId=1').then((response) => {
+    axios.get<IMapMonster[]>('https://localhost:6001/map-monsters?mapId=1').then((response) => {
       setMapMonsters(response.data);
     });
   };
 
   const apiDecrementHealth = (mapMonsterId: number): void => {
     axios.put<IMapMonster[]>(
-      `https://localhost:5001/map-monsters/${mapMonsterId}/decrement-health?value=1`,
+      `https://localhost:6001/map-monsters/${mapMonsterId}/decrement-health?value=1`,
     );
   };
 
